@@ -30,6 +30,18 @@ class Manager(object):
         self.interpretor = self.create_interpretor()
 
     def install(self):
+        # Add external repos before instalation begins
+        repos_path = os.path.join(self.application.get('directory'), 'repositories.apt')
+        if os.path.isfile(repos_path):
+            print('Adding externals repositories...')
+            if os.system("apt-get install -y --force-yes software-properties-common") != 0:
+                raise InstallationException('An error appeared while install software-properties-common to add external repository')
+            with open(Repos_path, 'r') as f:
+                for line in f.readlines():
+                    if os.system("apt-add-repository %s" % (line.strip())) != 0:
+                        raise InstallationException("Error adding repository %s" % line.strip())
+            os.system("apt-get update")
+
         # Calling pre-install hooks
         self.frontend.pre_install()
         if self.interpretor is not None:
